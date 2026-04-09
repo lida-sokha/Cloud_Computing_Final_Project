@@ -1,0 +1,29 @@
+# Node modules (VERY IMPORTANT)
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Environment variables (security)
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# Build / temp files
+dist/
+build/
+
+# Coverage
+coverage/
+
+# Optional: Terraform (if in same repo)
+.terraform/
+*.tfstate
+*.tfstate.*
