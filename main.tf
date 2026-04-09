@@ -111,3 +111,8 @@
     iam_profile      = module.security.instance_profile_name
     target_group_arn = aws_lb_target_group.terramino.arn
 }
+
+module "storage" {
+  source      = "./modules/storage"
+  bucket_name = "my-unique-web-assets-12345"
+}
