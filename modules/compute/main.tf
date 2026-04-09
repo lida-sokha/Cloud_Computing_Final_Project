@@ -13,9 +13,12 @@ resource "aws_launch_template" "terramino" {
   image_id      = data.aws_ami.amazon_linux.id
   instance_type = "t2.micro"
   
-    user_data = base64encode(templatefile("${path.root}/user-data.sh", {
-        db_address = var.db_endpoint
-    }))
+  # ADD THIS LINE HERE:
+  key_name      = "Lida" 
+
+  user_data = base64encode(templatefile("${path.root}/user-data.sh", {
+      db_address = var.db_endpoint
+  }))
 
   iam_instance_profile {
     name = var.iam_profile
@@ -32,7 +35,7 @@ resource "aws_launch_template" "terramino" {
 }
 
 resource "aws_autoscaling_group" "terramino" {
-  name                 = "terramino-final-project"
+  name                 = "terramino-final-project-v2"
   min_size             = 1
   max_size             = 3
   desired_capacity     = 1

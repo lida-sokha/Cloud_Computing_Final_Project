@@ -6,11 +6,12 @@ const app = express();
 app.use(cors());
 app.use(json());
 
+
 const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "todo",
+  host: "${db_address}", 
+  user: "root", 
+  password: "", 
+  database: "todo"
 });
 
 app.get("/tasks", (req, res) => {

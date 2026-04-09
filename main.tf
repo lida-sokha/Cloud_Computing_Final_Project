@@ -10,7 +10,7 @@ provider "aws" {
 
 # 1. NETWORK MODULE (VPC, Subnets)
 module "network" {
-  source         = "./modules/network"
+  source         = "./modules/networking"
   vpc_name       = "final-project-network"
   vpc_cidr       = "10.0.0.0/16"
   public_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
@@ -64,10 +64,15 @@ resource "aws_lb_listener" "terramino" {
 }
 
 resource "aws_lb_target_group" "terramino" {
-  name     = "terramino-tg"
-  port     = 80
+  name     = "terramino-tg-v2"
+  port     = 3000
   protocol = "HTTP"
   vpc_id   = module.network.vpc_id
+
+  health_check {
+    path = "/"
+    port = "3000"
+  }
 }
 
 # 7. MONITORING & SCALING (Connected to the Compute ASG)
