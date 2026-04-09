@@ -1,118 +1,82 @@
-    provider "aws" {
-      region = "us-east-1"
+provider "aws" {
+  region = "us-east-1"
 
-      default_tags {
-        tags = {
-          hashicorp-learn = "aws-asg"
-        }
-      }
+  default_tags {
+    tags = {
+      Project = "Cloud-Computing-Final"
     }
-
-    data "aws_availability_zones" "available" {
-      state = "available"
-    }
-
-
-    resource "aws_lb" "terramino" {
-      name               = "learn-asg-terramino-lb"
-      internal           = false
-      load_balancer_type = "application"
-      security_groups = [module.security.lb_sg_id]
-      subnets         = module.vpc.public_subnets
-    }
-
-    resource "aws_lb_listener" "terramino" {
-      load_balancer_arn = aws_lb.terramino.arn
-      port               = "80"
-      protocol           = "HTTP"
-
-      default_action {
-        type             = "forward"
-        target_group_arn = aws_lb_target_group.terramino.arn
-      }
-    }
-
-    resource "aws_lb_target_group" "terramino" {
-      name     = "learn-asg-terramino"
-      port     = 80
-      protocol = "HTTP"
-      vpc_id   = module.vpc.vpc_id
-    }
-
-    resource "aws_security_group" "terramino_instance" {
-      name   = "learn-asg-terramino-instance"
-      vpc_id = module.vpc.vpc_id
-
-      ingress {
-        from_port       = 80
-        to_port         = 80
-        protocol        = "tcp"
-        security_groups = [aws_security_group.terramino_lb.id]
-      }
-
-      egress {
-        from_port   = 0
-        to_port     = 0
-        protocol    = "-1"
-        cidr_blocks = ["0.0.0.0/0"]
-      }
-    }
-
-    resource "aws_security_group" "terramino_lb" {
-      name   = "learn-asg-terramino-lb"
-      vpc_id = module.vpc.vpc_id
-
-      ingress {
-        from_port   = 80
-        to_port     = 80
-        protocol    = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
-      }
-
-      egress {
-        from_port   = 0
-        to_port     = 0
-        protocol    = "-1"
-        cidr_blocks = ["0.0.0.0/0"]
-      }
-    }
-    module "monitoring" {
-      source   = "./modules/monitoring"
-      asg_name = module.compute.asg_name
-    }
-
-    module "scaling" {
-      source   = "./modules/scaling"
-      asg_name = module.compute.asg_name
-    }
-
-    module "vpc" {
-      source     = "./modules/vpc"
-      vpc_name   = "my-final-project-vpc"
-      cidr_block = "10.0.0.0/16"
-    }
-
-    module "security" {
-    source = "./modules/security"
-    vpc_id = module.vpc.vpc_id
   }
+}
 
-  module "network" {
+# 1. NETWORK MODULE (VPC, Subnets)
+module "network" {
   source         = "./modules/network"
   vpc_name       = "final-project-network"
   vpc_cidr       = "10.0.0.0/16"
   public_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
 }
 
-  module "compute" {
-    source           = "./modules/compute"
-    vpc_subnets      = module.network.public_subnets
-    instance_sg_id   = module.security.instance_sg_id
-    iam_profile      = module.security.instance_profile_name
-    target_group_arn = aws_lb_target_group.terramino.arn
+# 2. DATABASE MODULE (Looking up your manual "todo" DB)
+module "database" {
+  source = "./modules/database"
 }
 
+# 3. SECURITY MODULE (IAM and Security Group logic)
+module "security" {
+  source = "./modules/security"
+  vpc_id = module.network.vpc_id
+}
+
+# 4. STORAGE MODULE (S3 Bucket)
 module "storage" {
   source      = "./modules/storage"
   bucket_name = "my-unique-web-assets-12345"
+}
+
+# 5. COMPUTE MODULE (ASG and Launch Template)
+module "compute" {
+  source           = "./modules/compute"
+  vpc_subnets      = module.network.public_subnets
+  instance_sg_id   = module.security.instance_sg_id
+  iam_profile      = module.security.instance_profile_name
+  target_group_arn = aws_lb_target_group.terramino.arn
+  db_endpoint      = module.database.db_endpoint # Passing the DB info here
+}
+
+# 6. LOAD BALANCER (The front door)
+resource "aws_lb" "terramino" {
+  name               = "terramino-lb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [module.security.lb_sg_id]
+  subnets            = module.network.public_subnets
+}
+
+resource "aws_lb_listener" "terramino" {
+  load_balancer_arn = aws_lb.terramino.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.terramino.arn
+  }
+}
+
+resource "aws_lb_target_group" "terramino" {
+  name     = "terramino-tg"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = module.network.vpc_id
+}
+
+# 7. MONITORING & SCALING (Connected to the Compute ASG)
+module "monitoring" {
+  source   = "./modules/monitoring"
+  asg_name = module.compute.asg_name
+}
+
+module "scaling" {
+  source   = "./modules/scaling"
+  asg_name = module.compute.asg_name
 }

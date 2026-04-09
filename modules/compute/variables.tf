@@ -17,3 +17,8 @@ variable "target_group_arn" {
   description = "The ARN of the Load Balancer target group"
   type        = string
 }
+
+variable "db_endpoint" {
+  description = "The endpoint address of the RDS database"
+  type        = string
+}

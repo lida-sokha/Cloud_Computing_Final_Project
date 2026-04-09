@@ -13,7 +13,9 @@ resource "aws_launch_template" "terramino" {
   image_id      = data.aws_ami.amazon_linux.id
   instance_type = "t2.micro"
   
-  user_data = filebase64("user-data.sh")
+    user_data = base64encode(templatefile("${path.root}/user-data.sh", {
+        db_address = var.db_endpoint
+    }))
 
   iam_instance_profile {
     name = var.iam_profile

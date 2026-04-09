@@ -9,8 +9,20 @@ sudo yum install -y amazon-cloudwatch-agent
 sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
 -a fetch-config -m ec2 -s -c default
 
-# 4. (Optional) Your web server setup
+# 4. Install and start Web Server
 sudo yum install -y httpd
 sudo systemctl start httpd
 sudo systemctl enable httpd
-echo "<h1>Welcome to Project Cloud!</h1>" > /var/www/html/index.html
+
+# 5. Create a dynamic landing page showing the DB Connection
+# Note: ${db_address} is replaced by Terraform at runtime
+cat <<EOF > /var/www/html/index.html
+<html>
+<head><title>Project Cloud</title></head>
+<body>
+  <h1>Welcome to Project Cloud!</h1>
+  <p><strong>Server Status:</strong> Online</p>
+  <p><strong>Connected Database:</strong> ${db_address}</p>
+</body>
+</html>
+EOF
