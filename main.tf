@@ -78,12 +78,12 @@
     }
     module "monitoring" {
       source   = "./modules/monitoring"
-      asg_name = aws_autoscaling_group.terramino.name
+      asg_name = module.compute.asg_name
     }
 
     module "scaling" {
       source   = "./modules/scaling"
-      asg_name = aws_autoscaling_group.terramino.name
+      asg_name = module.compute.asg_name
     }
 
     module "vpc" {
@@ -96,10 +96,18 @@
     source = "./modules/security"
     vpc_id = module.vpc.vpc_id
   }
-  
+
   module "network" {
   source         = "./modules/network"
   vpc_name       = "final-project-network"
   vpc_cidr       = "10.0.0.0/16"
   public_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+}
+
+  module "compute" {
+    source           = "./modules/compute"
+    vpc_subnets      = module.network.public_subnets
+    instance_sg_id   = module.security.instance_sg_id
+    iam_profile      = module.security.instance_profile_name
+    target_group_arn = aws_lb_target_group.terramino.arn
 }
