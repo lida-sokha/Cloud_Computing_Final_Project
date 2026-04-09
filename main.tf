@@ -89,3 +89,12 @@ resource "aws_security_group" "terramino_lb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+module "monitoring" {
+  source   = "./modules/monitoring"
+  asg_name = aws_autoscaling_group.terramino.name
+}
+
+module "scaling" {
+  source   = "./modules/scaling"
+  asg_name = aws_autoscaling_group.terramino.name
+}
