@@ -17,8 +17,8 @@
       name               = "learn-asg-terramino-lb"
       internal           = false
       load_balancer_type = "application"
-      security_groups    = [aws_security_group.terramino_lb.id]
-      subnets            = module.vpc.public_subnets
+      security_groups = [module.security.lb_sg_id]
+      subnets         = module.vpc.public_subnets
     }
 
     resource "aws_lb_listener" "terramino" {
@@ -91,3 +91,8 @@
       vpc_name   = "my-final-project-vpc"
       cidr_block = "10.0.0.0/16"
     }
+    
+    module "security" {
+    source = "./modules/security"
+    vpc_id = module.vpc.vpc_id
+  }

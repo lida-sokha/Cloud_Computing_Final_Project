@@ -16,7 +16,7 @@ resource "aws_launch_template" "terramino" {
   user_data = filebase64("user-data.sh")
 
   iam_instance_profile {
-    name = aws_iam_instance_profile.ec2_profile.name
+    name = module.security.instance_profile_name
   }
 
   monitoring {
@@ -25,7 +25,7 @@ resource "aws_launch_template" "terramino" {
 
   network_interfaces {
     associate_public_ip_address = true
-    security_groups             = [aws_security_group.terramino_instance.id]
+    security_groups             = [module.security.instance_sg_id]
   }
 
   lifecycle {
