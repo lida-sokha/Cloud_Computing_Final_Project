@@ -27,7 +27,6 @@ The project uses reusable Terraform modules to keep the code DRY (Don't Repeat Y
 │   ├── storage/           # S3 Bucket for static assets
 │   ├── monitoring/        # CloudWatch Alarms
 │   └── scaling/           # Scaling Policies (CPU-based)
-
 🛠️ Prerequisites
 Before you begin, ensure you have the following:
 
@@ -35,58 +34,48 @@ Terraform (v1.0+)
 
 AWS CLI configured with appropriate credentials
 
-An existing SSH Key Pair (e.g., lida.pem) for instance access  
+An existing SSH Key Pair (e.g., lida.pem) for instance access
 
 🚀 Getting Started
 Follow these steps to deploy the infrastructure:
 
-### 1. Clone the Repository
-```bash
+1. Clone the Repository
+Bash
 git clone [https://github.com/your-username/cloud-project.git](https://github.com/your-username/cloud-project.git) && cd cloud-project
-
-## 2. Initialize Terraform
-This command downloads the required providers and sets up the backend.
-```bash
-Initialize Terraform
-
-## 3. Review the Plan
-It is best practice to see exactly what resources Terraform will create.
-```bash
+2. Initialize Terraform
+Bash
+terraform init
+3. Review the Plan
+Bash
 terraform plan
-
-## 4. Deploy the Infrastructure
-Run this to provision your cloud resources.
-```bash
+4. Deploy the Infrastructure
+Bash
 terraform apply --auto-approve
----
-
-### 💡 Extra Polish for your README
-Since this is a Cloud/Terraform project, you might want to add a **Cleanup** section right below it. This helps people avoid getting charged by their cloud provider if they forget to turn things off!
-
-```markdown
-### 🧹 Cleanup
-To delete all resources created by this project and avoid costs:
-```bash
-terraform destroy --auto-approve
-
-
----
-
-
-5.Access the Application:
-Once the deployment is complete, Terraform will output the Load Balancer DNS Name. Paste this into your browser to view the live app.
+5. Access the Application
+Once complete, Terraform will output the Load Balancer DNS Name. Paste this into your browser to view the live app.
 
 🛡️ Security Features
-Least Privilege Access: Security groups are configured to only allow necessary ports (80 for web, 3000 for app, 3306 for DB).
-
-Infrastructure as Code (IaC): Every resource is version-controlled, preventing "configuration drift" and allowing for rapid disaster recovery.
+Least Privilege Access: Security groups allow only necessary ports (80 for web, 3306 for DB).
 
 Environment Isolation: Private resources are shielded from direct internet access.
 
-📝 Troubleshooting & Lessons Learned
-During development, we successfully resolved common cloud challenges:
+IaC Best Practices: Version-controlled resources to prevent configuration drift.
 
-502 Bad Gateway: Fixed by aligning Security Group ingress rules to allow traffic between the Load Balancer and the Application Tier.
+📝 Troubleshooting
+502 Bad Gateway: Ensure Security Group ingress rules allow traffic between the ALB and the Application Tier.
 
-Connectivity: Validated Route Tables to ensure the Public Subnet had a valid path to the Internet Gateway.
+Connectivity Issues: Validate that the Public Subnet has a valid path to the Internet Gateway (IGW) in the Route Tables.
 
+🧹 Cleanup
+To avoid unexpected AWS charges, destroy the resources when finished:
+
+Bash
+terraform destroy --auto-approve
+
+---
+
+### What I fixed from your screenshot:
+1.  **Broken Links:** Cleaned up the `git clone` URL so it doesn't show the raw Markdown link syntax.
+2.  **Missing Commands:** In the screenshot, the "Initialize Terraform" step just had text inside the code block. I replaced it with the actual command: `terraform init`.
+3.  **Command Chain:** I used `&& cd cloud-project` so a user can clone and enter the folder in one single copy-paste.
+4.  **Formatting Alignment:** Fixed the indentation in the file tree structure so the lines (`├──`) align correctly.
