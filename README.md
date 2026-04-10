@@ -51,6 +51,9 @@ terraform plan
 4. Deploy the Infrastructure
 Bash
 terraform apply --auto-approve
+
+```text
+
 5. Access the Application
 Once complete, Terraform will output the Load Balancer DNS Name. Paste this into your browser to view the live app.
 
