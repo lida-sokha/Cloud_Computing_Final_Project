@@ -8,9 +8,9 @@ app.use(json());
 
 
 const db = mysql.createConnection({
-  host: "${db_address}", 
-  user: "root", 
-  password: "", 
+  host: "todo.cmv4wu8wsufa.us-east-1.rds.amazonaws.com", 
+  user: "admin", 
+  password: "Admin123admin", 
   database: "todo"
 });
 
