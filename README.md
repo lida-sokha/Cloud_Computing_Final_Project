@@ -60,8 +60,18 @@ terraform plan
 Run this to provision your cloud resources.
 ```bash
 terraform apply --auto-approve
+---
 
-## 5.Access the Application:
+### 💡 Extra Polish for your README
+Since this is a Cloud/Terraform project, you might want to add a **Cleanup** section right below it. This helps people avoid getting charged by their cloud provider if they forget to turn things off!
+
+```markdown
+### 🧹 Cleanup
+To delete all resources created by this project and avoid costs:
+```bash
+terraform destroy --auto-approve
+
+5.Access the Application:
 Once the deployment is complete, Terraform will output the Load Balancer DNS Name. Paste this into your browser to view the live app.
 
 🛡️ Security Features
