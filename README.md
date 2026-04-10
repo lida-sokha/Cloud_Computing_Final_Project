@@ -28,5 +28,6 @@ The project follows **DRY (Don't Repeat Yourself)** principles, isolating logic 
 │   ├── storage/           # S3 buckets for static content
 │   └── monitoring/        # CloudWatch metrics and SNS alerts
 
----
+```text
+
 
